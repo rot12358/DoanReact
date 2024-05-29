@@ -4,37 +4,36 @@ import { assets } from '../../assets/assets'
 import { StoreContext } from '../../context/StoreContext'
 import axios from "axios"
 
-const LoginPupup = (setShowLogin) => {
+const LoginPopup = ({setShowLogin}) => {
 
+    const {url, setToken} = useContext(StoreContext)
 
-      const {url, setToken} =useContext(StoreContext)
- 
-        const [currState, setCurrState] = useState("Login")
-        const [data,setData] = useState({
-          name:"",
-          email:"",
-          password:"",
-        })
+    const [currState, setCurrState] = useState("Login")
+    const [data, setData] = useState({
+        name:"",
+        email:"",
+        password:""
+    })
 
-        const onChangeHandler = (event) =>{
-          const name = event.target.name;
-          const value = event.target.value;
-          setData(data=>({...data,[name]:value}))
+    const onChangeHandler = (event) => {
+        const name = event.target.name;
+        const value = event.target.value;
+        setData(data=>({...data,[name]:value}))
+    }
+
+    const onLogin = async (event) => {
+        event.preventDefault()
+        let newUrl = url;
+        if (currState==="Login") {
+            newUrl += "/api/user/login"
         }
+        else{
+            newUrl += "/api/user/register"
+        } 
 
-        const onLogin = async (event) => {
-          
-          let newUrl = url;
-          if (currState==="Login") {
-              newUrl += "/api/user/login"
-          }
-          else{
-              newUrl += "/api/user/register"
-          } 
-  
-          const response = await axios.post(newUrl, data);
-  
-          if (response.data.success) {
+        const response = await axios.post(newUrl, data);
+
+        if (response.data.success) {
             setToken(response.data.token);
             localStorage.setItem("token", response.data.token);
             setShowLogin(false)
@@ -42,11 +41,7 @@ const LoginPupup = (setShowLogin) => {
         else{
             alert(response.data.message)
         }
-
-        }
-
-
-
+    }
 
   return (
     <div className='login-popup'>
@@ -74,4 +69,4 @@ const LoginPupup = (setShowLogin) => {
   )
 }
 
-export default LoginPupup
+export default LoginPopup
